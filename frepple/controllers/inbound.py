@@ -79,21 +79,16 @@ class importer(object):
 
         DROPSHIP_SUBCONTRACTOR_ROUTE = "Dropship Subcontractor on Order"
 
-        def get_picking_type_for_dropship_subcontractor(env, product, warehouse=None):
+        def get_picking_type_for_dropship_subcontractor(product):
             route = product.route_ids.filtered(
                 lambda r: r.name == DROPSHIP_SUBCONTRACTOR_ROUTE
             )
-            if not route:
-                return False  # product isn't on that route
-
-            rules = route.rule_ids.filtered(lambda r: r.action == "buy")
-            if warehouse:
-                # a route can carry rules for more than one warehouse — narrow it down
-                rules = rules.filtered(
-                    lambda r: not r.warehouse_id or r.warehouse_id == warehouse
+            if route:
+                return self.env["stock.picking.type"].search(
+                    [("name", "=", "Dropship Subcontractor")],
+                    limit=1,
                 )
-
-            return rules[:1].picking_type_id
+            return False
 
         msg = []
         if self.actual_user:
