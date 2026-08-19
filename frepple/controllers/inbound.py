@@ -359,6 +359,7 @@ class importer(object):
                                 "partner_id": supplier_id,
                                 "origin": remark,
                             }
+                            picking_type = None
                             try:
                                 product = product_product.browse(int(item_id))
                                 picking_type = (
@@ -367,7 +368,7 @@ class importer(object):
                                     )
                                 )
                                 msg.append(
-                                    f"picking_type is {picking_type.id if picking_type else "null"}"
+                                    f"new picking_type is {picking_type.id if picking_type else "null"}"
                                 )
                                 picking_type_id = None
                                 if picking_type:
@@ -400,6 +401,8 @@ class importer(object):
                             po.payment_term_id = (
                                 po.partner_id.property_supplier_payment_term_id.id
                             )
+                            if picking_type:
+                                po.picking_type_id = picking_type
                             supplier_reference[supplier_id] = {
                                 "id": po.id,
                                 "min_planned": date_planned,
