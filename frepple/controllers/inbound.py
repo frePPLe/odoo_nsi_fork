@@ -76,6 +76,25 @@ class importer(object):
             self.actual_user = None
 
     def run(self):
+
+        DROPSHIP_SUBCONTRACTOR_ROUTE = "Dropship Subcontractor on Order"
+
+        def get_picking_type_for_dropship_subcontractor(env, product, warehouse=None):
+            route = product.route_ids.filtered(
+                lambda r: r.name == DROPSHIP_SUBCONTRACTOR_ROUTE
+            )
+            if not route:
+                return False  # product isn't on that route
+
+            rules = route.rule_ids.filtered(lambda r: r.action == "buy")
+            if warehouse:
+                # a route can carry rules for more than one warehouse — narrow it down
+                rules = rules.filtered(
+                    lambda r: not r.warehouse_id or r.warehouse_id == warehouse
+                )
+
+            return rules[:1].picking_type_id
+
         msg = []
         if self.actual_user:
             product_product = self.env["product.product"].with_user(self.actual_user)
@@ -346,17 +365,27 @@ class importer(object):
                                 "origin": remark,
                             }
                             try:
-                                picking_type_id = stck_picking_type.search(
-                                    [
-                                        ("code", "=", "incoming"),
-                                        (
-                                            "warehouse_id",
-                                            "=",
-                                            int(elem.get("location_id")),
-                                        ),
-                                    ],
-                                    limit=1,
-                                )[:1]
+                                product = product_product.browse(int(item_id))
+                                picking_type = (
+                                    get_picking_type_for_dropship_subcontractor(
+                                        product=product
+                                    )
+                                )
+                                picking_type_id = None
+                                if picking_type:
+                                    picking_type_id = picking_type.id
+                                if not picking_type_id:
+                                    picking_type_id = stck_picking_type.search(
+                                        [
+                                            ("code", "=", "incoming"),
+                                            (
+                                                "warehouse_id",
+                                                "=",
+                                                int(elem.get("location_id")),
+                                            ),
+                                        ],
+                                        limit=1,
+                                    )[:1]
                                 if not picking_type_id:
                                     picking_type_id = stck_picking_type.search(
                                         [
