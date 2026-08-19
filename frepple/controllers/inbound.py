@@ -366,6 +366,9 @@ class importer(object):
                                         product=product
                                     )
                                 )
+                                msg.append(
+                                    f"picking_type is {picking_type.id if picking_type else "null"}"
+                                )
                                 picking_type_id = None
                                 if picking_type:
                                     picking_type_id = picking_type.id
