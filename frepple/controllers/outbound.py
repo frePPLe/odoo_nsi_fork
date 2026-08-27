@@ -1311,6 +1311,17 @@ class exporter(object):
                     else ""
                 ),
             )
+
+            # first route name
+            # we need this to figure out a product is dropshiped
+            # from the vendor to the subcontractor
+            # Thus, we don't want to allow the user to export POs
+            # for these products
+            if tmpl["route_ids"] and tmpl["route_ids"][0] in self.routes:
+                yield '<stringproperty name="first_route_name" value=%s/>' % (
+                    quoteattr(self.routes[tmpl["route_ids"][0]]["name"])
+                )
+
             # Export suppliers for the item, if the item is allowed to be purchased
             if tmpl["purchase_ok"]:
                 suppliers = {}
@@ -2927,10 +2938,12 @@ class exporter(object):
                                         )
                                 else:
                                     for out_move in outbound_moves:
-                                        remaining_consumption = out_move.product_uom._compute_quantity(
-                                            out_move.product_uom_qty
-                                            - out_move.quantity,
-                                            out_move.product_id.uom_id
+                                        remaining_consumption = (
+                                            out_move.product_uom._compute_quantity(
+                                                out_move.product_uom_qty
+                                                - out_move.quantity,
+                                                out_move.product_id.uom_id,
+                                            )
                                         )
                                         if remaining_consumption > 0:
                                             yield '<flowplan status="confirmed" quantity="%s" date="%s"><item name=%s/></flowplan>' % (
