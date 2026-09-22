@@ -892,7 +892,7 @@ class importer(object):
                                         if net_duration:
                                             wo.duration_expected = net_duration
                                             msg.append(
-                                                f"setting a net duration of {net_duration} minutes to wo {wo.id}\n"
+                                                f"1. setting a net duration of {net_duration} minutes to wo {wo.id}\n"
                                             )
                                             if not create:
                                                 wo.write(
