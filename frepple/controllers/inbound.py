@@ -893,7 +893,7 @@ class importer(object):
                                                 "net_duration"
                                             )
                                             msg.append(
-                                                "setting a net duration of {rec.get('net_duration')} minutes to wo {wo.id}\n"
+                                                f"setting a net duration of {rec.get('net_duration')} minutes to wo {wo.id}\n"
                                             )
                                             if not create:
                                                 wo.write(
