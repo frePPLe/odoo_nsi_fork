@@ -245,6 +245,10 @@ class importer(object):
                         "operation": elem.get("operation"),
                         "id": int(elem.get("operation").rsplit("- ", 1)[-1]),
                     }
+                    try:
+                        wo["net_duration"] = int(elem.get("net_duration")) / 60.0
+                    except:
+                        pass
                     st = elem.get("start")
                     if st:
                         try:
@@ -883,6 +887,19 @@ class importer(object):
                                             wo.date_start = rec["start"]
                                             if not create:
                                                 wo.write({"date_start": wo.date_start})
+
+                                        if rec.get("net_duration"):
+                                            wo.duration_expected = rec.get(
+                                                "net_duration"
+                                            )
+                                            if not create:
+                                                wo.write(
+                                                    {
+                                                        "net_duration": rec.get(
+                                                            "net_duration"
+                                                        )
+                                                    }
+                                                )
                                         for res in rec["workcenters"]:
                                             wc = mfg_workcenter.browse(res["id"])
                                             if not wc:
