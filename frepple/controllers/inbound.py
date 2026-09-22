@@ -891,9 +891,6 @@ class importer(object):
                                         net_duration = rec.get("net_duration")
                                         if net_duration:
                                             wo.duration_expected = net_duration
-                                            msg.append(
-                                                f"1. setting a net duration of {net_duration} minutes to wo {wo.id}\n"
-                                            )
                                             if not create:
                                                 wo.write(
                                                     {"duration_expected": net_duration}
@@ -952,10 +949,6 @@ class importer(object):
                                                                 {"workcenter_id": wc.id}
                                                             )
                                                             break
-                                        if net_duration:
-                                            wo.write(
-                                                {"duration_expected": net_duration}
-                                            )
 
                 except Exception as e:
                     import traceback
