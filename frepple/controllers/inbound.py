@@ -888,20 +888,15 @@ class importer(object):
                                             if not create:
                                                 wo.write({"date_start": wo.date_start})
 
-                                        if rec.get("net_duration"):
-                                            wo.duration_expected = rec.get(
-                                                "net_duration"
-                                            )
+                                        net_duration = rec.get("net_duration")
+                                        if net_duration:
+                                            wo.duration_expected = net_duration
                                             msg.append(
-                                                f"setting a net duration of {rec.get('net_duration')} minutes to wo {wo.id}\n"
+                                                f"setting a net duration of {net_duration} minutes to wo {wo.id}\n"
                                             )
                                             if not create:
                                                 wo.write(
-                                                    {
-                                                        "net_duration": rec.get(
-                                                            "net_duration"
-                                                        )
-                                                    }
+                                                    {"duration_expected": net_duration}
                                                 )
                                         for res in rec["workcenters"]:
                                             wc = mfg_workcenter.browse(res["id"])
@@ -957,6 +952,10 @@ class importer(object):
                                                                 {"workcenter_id": wc.id}
                                                             )
                                                             break
+                                        if net_duration:
+                                            wo.write(
+                                                {"duration_expected": net_duration}
+                                            )
 
                 except Exception as e:
                     import traceback
