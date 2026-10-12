@@ -1493,16 +1493,15 @@ class exporter(object):
                             exists = True
                             break
                 if not exists:
-                    # hack for NSI to replace a child resource with its owner
-                    if i["workcenter_id"]:
-                        res = self.map_workcenters.get(i["workcenter_id"][0])
-                        if res:
-                            owner = res["owner"]
-                            if owner:
-                                i["workcenter_id"] = owner
-
                     mrp_routing_workcenters[i["bom_id"][0]].append(i)
             else:
+                # hack for NSI to replace a child resource with its owner
+                if i["workcenter_id"]:
+                    res = self.map_workcenters.get(i["workcenter_id"][0])
+                    if res:
+                        owner = res["owner"]
+                        if owner:
+                            i["workcenter_id"] = owner
                 mrp_routing_workcenters[i["bom_id"][0]] = [i]
 
         # Loop over all secondary workcenters
